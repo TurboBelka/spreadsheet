@@ -4,7 +4,7 @@ import os
 import httplib2
 
 from apiclient import discovery
-from flask import json
+import json
 from googleapiclient.errors import HttpError
 from oauth2client import client, tools
 from oauth2client.client import HttpAccessTokenRefreshError
