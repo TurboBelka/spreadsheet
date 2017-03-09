@@ -2,6 +2,7 @@ import argparse
 import getopt
 import os
 import httplib2
+import logging
 
 from apiclient import discovery
 import json
@@ -27,6 +28,13 @@ parser.add_argument("-s", "--spread_sheet_id",
 					help="enter google spreadsheet ID")
 
 
+logging.basicConfig(format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s '
+						   u'[%(asctime)s]  %(message)s',
+					level=logging.DEBUG)
+fh = logging.FileHandler('logs.txt')
+fh.setLevel(logging.DEBUG)
+
+
 def get_credentials():
 	credential_dir = os.path.join(BASE_DIR, 'credentials')
 	if not os.path.exists(credential_dir):
@@ -44,10 +52,11 @@ def get_credentials():
 
 
 def generate_fake_data():
+	logging.info('START GENERATE DATA')
 	fake = Faker()
 	fake_data = [[fake.name() for j in xrange(COLUMNS_COUNT)] for i in
 				 xrange(ROWS_COUNT)]
-	print 'Faked Data:', fake_data
+	logging.info('Faked Data: %s' % fake_data)
 	return fake_data
 
 
@@ -55,7 +64,7 @@ if __name__ == "__main__":
 	try:
 		flags = parser.parse_args()
 	except getopt.GetoptError as e:
-		print 'ARG PARSER ERROR:', e
+		logging.error('ARG PARSER ERROR: %s' % e)
 		flags = None
 
 	credentials = get_credentials()
@@ -70,11 +79,10 @@ if __name__ == "__main__":
 		result = service.spreadsheets().values().update(
 			spreadsheetId=flags.spread_sheet_id, range=flags.range_name,
 			valueInputOption='USER_ENTERED', body=body).execute()
-		print 'HTTP RESULT:'
-		print result
+		logging.info('HTTP RESULT: %s' % result)
 	except HttpError as e:
-		print 'HTTP ERROR:', e.resp
-		print 'ERROR MESSAGE:', json.loads(e.content).get('error').get(
-			'message')
+		logging.error('HTTP ERROR: %s' % e.resp)
+		logging.error('ERROR MESSAGE: %s' % json.loads(e.content).get('error').get(
+			'message'))
 	except HttpAccessTokenRefreshError as e:
-		print 'HTTP ACCESS TOKEN ERROR:', e
+		logging.error('HTTP ACCESS TOKEN ERROR: %s' % e)
