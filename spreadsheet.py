@@ -18,7 +18,7 @@ from faker import Faker
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCOPE = 'https://www.googleapis.com/auth/spreadsheets'
 CLIENT_SECRET_FILE = os.path.join(BASE_DIR, 'spreadsheet', 'client_secret.json')
-ROWS_COUNT = 150
+ROWS_COUNT = 50
 COLUMNS_COUNT = 50
 
 parser = argparse.ArgumentParser()
@@ -27,12 +27,10 @@ parser.add_argument("-r", "--range_name",
 parser.add_argument("-s", "--spread_sheet_id",
 					help="enter google spreadsheet ID")
 
-
 logging.basicConfig(format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s '
 						   u'[%(asctime)s]  %(message)s',
-					level=logging.DEBUG)
-fh = logging.FileHandler('logs.txt')
-fh.setLevel(logging.DEBUG)
+					level=logging.DEBUG,
+					filename=os.path.join(BASE_DIR, 'spreadsheet', 'logs.log'))
 
 
 def get_credentials():
